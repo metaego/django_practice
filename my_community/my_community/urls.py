@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from user.views import home
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include('user.urls')), # 해당 경로로 request가 들어오면 user app의 urls.py로 보내기
+    path('', home),
 ]
