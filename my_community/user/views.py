@@ -10,6 +10,8 @@ from django.contrib.auth.hashers import make_password, check_password
 #(특정앱의) models.py에 정의한 User 모델을 CRUD하기 위해 import
 from .models import User 
 
+from .forms import LoginForm
+
 
 
 # Create your views here.
@@ -52,34 +54,56 @@ def register(request):
     
 def login(request):
     
+    # Practice_1: LoginForm()을 사용하지 않고 login 기능 생성 연습
     # GET으로 들어오면 로그인 화면 렌더링
-    if request.method == 'GET':
-        return render(request, 'login.html')
-    elif request.method == 'POST':
-        user_id = request.POST.get('user_id', None)
-        password = request.POST.get('password', None)
+    # if request.method == 'GET':
+    #     return render(request, 'login.html')
+    # elif request.method == 'POST':
+    #     user_id = request.POST.get('user_id', None)
+    #     password = request.POST.get('password', None)
 
-        res_data = {}
+    #     res_data = {}
 
-        # 아이디나 패스워드를 입력하지 않은 경우
-        if not (user_id and password):
-            res_data['error'] = "모든 값을 입력해야 합니다."
-        else:
-            # 모든 값이 제대로 들어왔으면 로그인 로직 수행
-            # user_id와 일치하는 정보가 있는지 조회
-            user = User.objects.get(user_id=user_id) # db 조회해서 데이터 가져오기
+    #     # 아이디나 패스워드를 입력하지 않은 경우
+    #     if not (user_id and password):
+    #         res_data['error'] = "모든 값을 입력해야 합니다."
+    #     else:
+    #         # 모든 값이 제대로 들어왔으면 로그인 로직 수행
+    #         # user_id와 일치하는 정보가 있는지 조회
+    #         user = User.objects.get(user_id=user_id) # db 조회해서 데이터 가져오기
 
-            if check_password(password, user.password):
-                # 비밀번호가 일치하면 로그인 처리 (세션)
-                request.session['user'] = user.id
+    #         if check_password(password, user.password):
+    #             # 비밀번호가 일치하면 로그인 처리 (세션)
+    #             request.session['user'] = user.id
 
-                # home으로 redirect
-                return redirect('/')
-            else:
-                # 에러메시지 넣어주기
-                res_data['error'] = "비밀번호가 틀렸습니다."
+    #             # home으로 redirect
+    #             return redirect('/')
+    #         else:
+    #             # 에러메시지 넣어주기
+    #             res_data['error'] = "비밀번호가 틀렸습니다."
+        # return render(request, 'login.html', res_data)
 
-        return render(request, 'login.html', res_data)
+
+
+    # Practice_2: LoginForm() 기능을 사용하여 login 기능 생성
+    if request.method == 'POST':
+        # 폼 객체 생성 시에 사용자가 post로 넘긴 모든 데이터를 기본적으로 세팅
+        # 사용자가 보낸 내용을 자동으로 form에 세팅합니다.
+        form = LoginForm(request.POST)
+
+        # 사용자가 입력한 값이 유효하다면
+        if form.is_valid():
+            # 이제 is_valid()가 True면 form에 user의 pk가 들어 있습니다.
+            request.session['user'] = form.user_id
+            # 메인 페이지로 이동
+            return redirect("/")
+    else:
+        # GET 방식으로 요청하면 비어있는 form을 생성
+        form = LoginForm()
+
+    return render(request, 'login.html', {'form': form})
+
+
     
 def home(request):
     # 세션에 저장된 user의 id(uid) 가져오기
