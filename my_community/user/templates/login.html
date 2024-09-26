@@ -1,0 +1,72 @@
+<html>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+{% extends "base.html" %}
+{% block contents %}
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h1>로그인</h1>
+        </div>
+    </div>
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                {{ error }}
+            </div>
+        </div>
+    <div class="row mt-5">
+        <div class="col-12">
+            <form method="POST" action=".">
+                {% csrf_token %}
+                <!-- Practice_1: LoginForm()을 사용하지 않고 로그인 기능 개발 -->
+                {% comment %} <div class="form-group">
+                    <label for="user_id">사용자 이름</label>
+                    <input type="text" class="form-control" id="user_id" placeholder="사용자 이름" name="user_id">
+                </div>
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" class="form-control" id="password" placeholder="비밀번호" name="password">
+                </div>
+                {% endcomment %}
+
+
+                <!-- Practice_2: LoginForm()을 사용하여 로그인 기능 개발 -->
+                <!-- user.views.py의 login 기능의 contents['form'] -->
+                <!--html 태그 사용 시 as_태그명 --> 
+                {% comment %} 
+                {{ form.as_p }} <!-- as_p는 각각 구성 요소들을 p태그로 감싸서 배치하겠다는 뜻 -->
+                {{ form.as_table }} <!-- as_table은 각각 구성 요소들을 table 태그로 감싸서 배치하겠다는 뜻 --> 
+                {% endcomment %}
+
+                <!-- 반복문 활용법 -->
+                {% for field in form %}
+                <div class="form-group">
+                    <!-- .label과 .name은 form의 변수명이 출력되는 듯? -->
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <input type="{{ field.field.widget.input_type }}"
+                            class="form-control"
+                            id="{{ field.id_for_label }}"
+                            placeholder="{{ field.label }}"
+                            name="{{ field.name }}" />
+                </div>
+                
+                <!-- 사용자 아이디나 pw 중 하나의 필드를 입력하지 않을 때 발생 error -->
+                {% if field.errors %}
+                <span style="color: red;">{{ field.errors }}</span>
+                {% endif %}
+
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">로그인</button> 
+            </form>
+        </div>
+    </div>
+{% endblock %}
+</html>
